@@ -1,0 +1,823 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LCW3 : HEARTWARE</title>
+  <style>
+    :root {
+      --black: #050505;
+      --white: #f4f4f4;
+      --muted: #9a9a9a;
+      --red: #ff1f3d;
+      --deep-red: #7a0012;
+      --line: rgba(255,255,255,0.13);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      background: var(--black);
+      color: var(--white);
+      font-family: "Pretendard", "Noto Sans KR", system-ui, sans-serif;
+      overflow-x: hidden;
+      line-height: 1.8;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background:
+        linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+      background-size: 44px 44px;
+      mask-image: linear-gradient(to bottom, black, transparent 85%);
+      z-index: 0;
+    }
+
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background: linear-gradient(to bottom, transparent 0%, rgba(255,255,255,0.04) 50%, transparent 100%);
+      background-size: 100% 5px;
+      opacity: 0.22;
+      mix-blend-mode: screen;
+      z-index: 1;
+    }
+
+    .noise {
+      position: fixed;
+      inset: 0;
+      background-image: radial-gradient(rgba(255,255,255,0.14) 1px, transparent 1px);
+      background-size: 3px 3px;
+      opacity: 0.035;
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 72px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 5vw;
+      border-bottom: 1px solid var(--line);
+      background: rgba(5,5,5,0.72);
+      backdrop-filter: blur(18px);
+      z-index: 10;
+    }
+
+    .logo-wrap {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .site-logo {
+      width: 38px;
+      height: 38px;
+      object-fit: contain;
+      filter: drop-shadow(0 0 10px rgba(255,31,61,0.45));
+    }
+
+    .logo {
+      font-size: 0.88rem;
+      letter-spacing: 0.28em;
+      font-weight: 800;
+    }
+
+    .logo span {
+      color: var(--red);
+    }
+
+    nav {
+      display: flex;
+      gap: 22px;
+      font-size: 0.78rem;
+      letter-spacing: 0.12em;
+    }
+
+    nav a {
+      color: var(--muted);
+      text-decoration: none;
+      transition: 0.2s;
+    }
+
+    nav a:hover {
+      color: var(--red);
+    }
+
+    main {
+      position: relative;
+      z-index: 3;
+    }
+
+    .hero {
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      padding: 130px 6vw 80px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .heart-ring {
+      position: absolute;
+      border-radius: 50%;
+      border: 1px solid rgba(255,31,61,0.45);
+      pointer-events: none;
+      z-index: 1;
+      box-shadow: 0 0 32px rgba(255,31,61,0.14), inset 0 0 32px rgba(255,31,61,0.08);
+    }
+
+    .ring1 {
+      width: 280px;
+      height: 280px;
+      animation: heartbeat 2.8s infinite;
+    }
+
+    .ring2 {
+      width: 500px;
+      height: 500px;
+      animation: heartbeat 2.8s infinite 0.14s;
+    }
+
+    .ring3 {
+      width: 760px;
+      height: 760px;
+      animation: heartbeat 2.8s infinite 0.28s;
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background: radial-gradient(circle, rgba(255,31,61,0.18) 0%, rgba(255,31,61,0.055) 28%, transparent 72%);
+      filter: blur(8px);
+      animation: heartbeatGlow 2.8s infinite;
+      z-index: 0;
+    }
+
+    .hero-content {
+      text-align: center;
+      position: relative;
+      z-index: 2;
+      max-width: 980px;
+    }
+
+    .kicker {
+      color: var(--red);
+      letter-spacing: 0.34em;
+      font-size: 0.76rem;
+      font-weight: 800;
+      margin-bottom: 22px;
+    }
+
+    h1 {
+      font-size: clamp(3.6rem, 10vw, 9rem);
+      line-height: 0.92;
+      letter-spacing: -0.07em;
+      font-weight: 950;
+      text-transform: uppercase;
+      text-shadow: 3px 0 var(--deep-red), -3px 0 rgba(255,255,255,0.12);
+      animation: glitch 3.6s infinite steps(1);
+    }
+
+    .subtitle {
+      margin: 34px auto 0;
+      max-width: 720px;
+      color: #d7d7d7;
+      font-size: clamp(1rem, 2vw, 1.25rem);
+      word-break: keep-all;
+    }
+
+    .hero-meta {
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+      margin-top: 44px;
+      flex-wrap: wrap;
+    }
+
+    .chip {
+      border: 1px solid var(--line);
+      padding: 9px 15px;
+      border-radius: 999px;
+      color: var(--muted);
+      background: rgba(255,255,255,0.025);
+      font-size: 0.78rem;
+      letter-spacing: 0.1em;
+    }
+
+    .sound-btn {
+      margin-top: 34px;
+      border: 1px solid rgba(255,31,61,0.65);
+      background: rgba(255,31,61,0.08);
+      color: var(--white);
+      padding: 13px 22px;
+      border-radius: 999px;
+      font-weight: 900;
+      letter-spacing: 0.18em;
+      cursor: pointer;
+      box-shadow: 0 0 25px rgba(255,31,61,0.12);
+      transition: 0.2s ease;
+    }
+
+    .sound-btn:hover {
+      background: var(--red);
+      color: var(--black);
+      box-shadow: 0 0 40px rgba(255,31,61,0.34);
+      transform: translateY(-2px);
+    }
+
+    .sound-btn.playing {
+      background: var(--white);
+      color: var(--black);
+      border-color: var(--white);
+    }
+
+    section {
+      padding: 110px 7vw;
+      border-top: 1px solid var(--line);
+      min-height: 72vh;
+      display: grid;
+      grid-template-columns: 0.75fr 1.25fr;
+      gap: 6vw;
+      align-items: start;
+    }
+
+    .section-title {
+      position: sticky;
+      top: 110px;
+    }
+
+    .section-num {
+      color: var(--red);
+      font-size: 0.8rem;
+      font-weight: 900;
+      letter-spacing: 0.24em;
+      margin-bottom: 16px;
+    }
+
+    h2 {
+      font-size: clamp(2rem, 5vw, 4.2rem);
+      line-height: 1;
+      letter-spacing: -0.055em;
+      word-break: keep-all;
+    }
+
+    .section-sub {
+      margin-top: 20px;
+      color: var(--muted);
+      font-size: 0.95rem;
+      word-break: keep-all;
+    }
+
+    .text-block {
+      max-width: 820px;
+    }
+
+    .line {
+      opacity: 0;
+      transform: translateY(28px);
+      filter: blur(8px);
+      transition: opacity 0.8s ease, transform 0.8s ease, filter 0.8s ease;
+      margin-bottom: 20px;
+      color: #e7e7e7;
+      font-size: clamp(1.02rem, 1.7vw, 1.22rem);
+      word-break: keep-all;
+    }
+
+    .line.show {
+      opacity: 1;
+      transform: translateY(0);
+      filter: blur(0);
+    }
+
+    .line.strong {
+      font-size: clamp(1.35rem, 2.4vw, 2rem);
+      color: var(--white);
+      font-weight: 850;
+      line-height: 1.45;
+      padding-left: 18px;
+      border-left: 3px solid var(--red);
+    }
+
+    .line.red {
+      color: var(--red);
+      font-weight: 850;
+    }
+
+    .terminal {
+      margin-top: 70px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.025);
+      padding: 26px;
+      border-radius: 18px;
+      box-shadow: 0 0 45px rgba(255,31,61,0.08);
+    }
+
+    .terminal-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 18px;
+      border-bottom: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 0.78rem;
+      letter-spacing: 0.14em;
+    }
+
+    .terminal p {
+      margin-top: 22px;
+      color: var(--white);
+      font-size: clamp(1.1rem, 2.2vw, 1.8rem);
+      line-height: 1.55;
+      font-weight: 850;
+      word-break: keep-all;
+    }
+
+    .signal-panel {
+      position: fixed;
+      right: 24px;
+      top: 96px;
+      width: 250px;
+      padding: 20px;
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      background: rgba(5,5,5,0.72);
+      backdrop-filter: blur(18px);
+      z-index: 11;
+      box-shadow: 0 0 35px rgba(255,31,61,0.09);
+    }
+
+    .panel-title {
+      color: var(--red);
+      font-size: 0.76rem;
+      font-weight: 950;
+      letter-spacing: 0.18em;
+      margin-bottom: 16px;
+    }
+
+    .panel-status {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 12px 0;
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+      margin-bottom: 14px;
+      font-size: 0.72rem;
+      color: var(--muted);
+      letter-spacing: 0.1em;
+    }
+
+    .panel-status strong {
+      color: var(--white);
+    }
+
+    .switch-line {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 12px;
+      color: #d8d8d8;
+      font-size: 0.9rem;
+      cursor: pointer;
+      word-break: keep-all;
+    }
+
+    .switch-line input {
+      accent-color: var(--red);
+    }
+
+    .heart-rate {
+      margin-top: 18px;
+      color: var(--red);
+      font-size: 0.76rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+
+    .lyrics-box {
+      margin-top: 28px;
+      padding-top: 22px;
+      border-top: 1px solid var(--line);
+    }
+
+    .lyrics-title {
+      color: var(--red);
+      font-size: 0.78rem;
+      font-weight: 950;
+      letter-spacing: 0.18em;
+      margin-bottom: 18px;
+    }
+
+    .lyric-pair {
+      padding: 15px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .lyric {
+      color: var(--white);
+      font-size: 1.03rem;
+      font-weight: 780;
+      letter-spacing: 0.02em;
+    }
+
+    .meaning {
+      margin-top: 6px;
+      color: #bdbdbd;
+      font-size: 0.94rem;
+      line-height: 1.75;
+      word-break: keep-all;
+    }
+
+    body.hide-lyrics .lyric {
+      display: none;
+    }
+
+    body.hide-meaning .meaning {
+      display: none;
+    }
+
+    .discord-btn {
+      display: inline-block;
+      margin-top: 24px;
+      border: 1px solid rgba(255,31,61,0.75);
+      background: var(--red);
+      color: var(--black);
+      padding: 13px 20px;
+      border-radius: 999px;
+      font-weight: 950;
+      letter-spacing: 0.08em;
+      text-decoration: none;
+      box-shadow: 0 0 32px rgba(255,31,61,0.22);
+      transition: 0.2s ease;
+    }
+
+    .discord-btn:hover {
+      background: var(--white);
+      border-color: var(--white);
+      transform: translateY(-2px);
+      box-shadow: 0 0 48px rgba(255,255,255,0.2);
+    }
+
+    footer {
+      padding: 80px 7vw 110px;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      position: relative;
+      z-index: 3;
+    }
+
+    footer strong {
+      color: var(--white);
+    }
+
+    @keyframes glitch {
+      0%, 88%, 100% { transform: translate(0); }
+      89% { transform: translate(2px, -1px); }
+      90% { transform: translate(-3px, 1px); }
+      91% { transform: translate(1px, 0); }
+    }
+
+    @keyframes heartbeat {
+      0% { transform: scale(0.92); opacity: 0.12; }
+      7% { transform: scale(1.1); opacity: 0.9; }
+      13% { transform: scale(0.97); opacity: 0.36; }
+      21% { transform: scale(1.2); opacity: 1; }
+      32% { transform: scale(1.02); opacity: 0.28; }
+      100% { transform: scale(0.92); opacity: 0.12; }
+    }
+
+    @keyframes heartbeatGlow {
+      0% { opacity: 0.08; transform: scale(0.96); }
+      7% { opacity: 0.42; transform: scale(1.04); }
+      13% { opacity: 0.16; transform: scale(0.99); }
+      21% { opacity: 0.62; transform: scale(1.1); }
+      32% { opacity: 0.13; transform: scale(1); }
+      100% { opacity: 0.08; transform: scale(0.96); }
+    }
+
+    @media (max-width: 1180px) {
+      .signal-panel {
+        position: relative;
+        right: auto;
+        top: auto;
+        width: auto;
+        margin: 92px 6vw 0;
+      }
+    }
+
+    @media (max-width: 880px) {
+      header {
+        height: auto;
+        padding: 18px 5vw;
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      nav {
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+
+      section {
+        grid-template-columns: 1fr;
+        padding: 90px 6vw;
+        gap: 40px;
+      }
+
+      .section-title {
+        position: relative;
+        top: auto;
+      }
+
+      .hero {
+        padding-top: 170px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="noise"></div>
+
+  <header>
+    <div class="logo-wrap">
+      <!-- 로고 이미지를 쓰려면 아래 src를 네 파일명으로 바꾸면 됨: 예) logo.png -->
+      <img class="site-logo" src="logo.png" alt="LCW3 HEARTWARE Logo" onerror="this.style.display='none'" />
+      <div class="logo">LCW3 : <span>HΣΛTWΔRΞ</span></div>
+    </div>
+    <nav>
+      <a href="#war">WAR</a>
+      <a href="#progress">PROGRESS</a>
+      <a href="#stars">STARS</a>
+      <a href="#collapse">COLLAPSE</a>
+      <a href="#union">UNION</a>
+      <a href="#signal">SIGNAL</a>
+    </nav>
+  </header>
+
+  <aside class="signal-panel">
+    <div class="panel-title">HEARTWARE INTERFACE</div>
+    <div class="panel-status">
+      <span>SIGNAL STATUS</span>
+      <strong>ACTIVE</strong>
+    </div>
+    <label class="switch-line">
+      <input type="checkbox" id="toggleLyrics" checked />
+      <span>가사 표시</span>
+    </label>
+    <label class="switch-line">
+      <input type="checkbox" id="toggleMeaning" checked />
+      <span>해석 표시</span>
+    </label>
+    <div class="heart-rate">
+  CURRENT THEME :
+  <br>
+  &lt;모스크스트라우멘&gt;
+</div>
+  </aside>
+
+  <main>
+    <section class="hero">
+      <div class="heart-ring ring1"></div>
+      <div class="heart-ring ring2"></div>
+      <div class="heart-ring ring3"></div>
+      <div class="hero-content">
+        <div class="kicker">YEAR 2600 / FIVE YEARS AFTER THE UNION</div>
+        <h1>HEARTWARE</h1>
+        <p class="subtitle">기계로 된 심장이 뛰기 시작한 뒤, 인류는 신에게 가까워졌으나 끝내 인간으로 남았습니다.</p>
+        <div class="hero-meta">
+          <span class="chip">POST-WWIII</span>
+          <span class="chip">ANDROID AGE</span>
+          <span class="chip">MULTI-PLANETARY HUMANITY</span>
+          <span class="chip">INDEPENDENT STATES</span>
+        </div>
+
+        <button class="sound-btn" id="soundBtn" type="button">PLAY SIGNAL</button>
+        <!-- 음악 파일을 쓰려면 아래 src를 네 파일명으로 바꾸면 됨: 예) heartware-theme.mp3 -->
+        <audio id="bgm" src="heartware-theme.mp3" loop preload="auto"></audio>
+      </div>
+    </section>
+
+    <section id="war">
+      <div class="section-title">
+        <div class="section-num">01 / RED CENTURY</div>
+        <h2>붉은 세기의 종말</h2>
+        <p class="section-sub">제3차 세계대전 이후, 인류는 마지막 국가를 꿈꾸었습니다.</p>
+      </div>
+      <div class="text-block">
+        <p class="line strong">21세기 중반부터 후반까지 세계는 새로운 냉전 속에 놓여 있었습니다.</p>
+        <p class="line">미국을 중심으로 한 자유주의 진영과 여러 권위주의 국가들은 경제, 외교, 정보전, 우주개발 경쟁을 벌이며 끊임없이 대립하였습니다.</p>
+        <p class="line">수십 년 동안 이어진 긴장 끝에 갈등은 결국 통제 불가능한 수준으로 확대되었고, 인류는 제3차 세계대전이라는 최악의 재앙을 맞이하게 되었습니다.</p>
+        <p class="line">전쟁은 지구 전역을 휩쓸었습니다.</p>
+        <p class="line">수많은 도시가 파괴되었고, 국가들은 붕괴하였으며, 인류는 스스로의 문명을 무너뜨릴 뻔하였습니다.</p>
+        <p class="line red">하지만 긴 전쟁 끝에 승리한 것은 미국을 중심으로 한 자유주의 진영이었습니다.</p>
+        <p class="line">전후 세계는 국가 간 경쟁이 계속되는 한 인류는 언젠가 또다시 자멸할 것이라는 결론에 도달하게 되었습니다.</p>
+        <p class="line">그 결과 세계 각국은 점차 통합의 길을 선택하기 시작하였습니다.</p>
+        <p class="line">수 세기에 걸친 정치적 통합과 경제적 융합 끝에 인류는 마침내 단일한 초국가 체제를 형성하게 되었고, 훗날 지구연방공화국이라 불리게 되는 새로운 질서가 탄생하게 되었습니다.</p>
+      </div>
+    </section>
+
+    <section id="progress">
+      <div class="section-title">
+        <div class="section-num">02 / PROGRESS</div>
+        <h2>진보의 세기</h2>
+        <p class="section-sub">특이점은 오지 않았습니다. 대신 새로운 이웃이 태어났습니다.</p>
+      </div>
+      <div class="text-block">
+        <p class="line strong">21세기 후반, 인류는 스스로가 신의 영역에 한 발짝 다가섰다고 믿기 시작했습니다.</p>
+        <p class="line">고도화된 인공지능은 이미 수많은 전문 분야에서 인간의 능력을 뛰어넘고 있었으며, 자동화 기술은 노동의 개념 자체를 재정의하고 있었습니다.</p>
+        <p class="line">기술적 특이점 또한 더 이상 공상과학 속 개념이 아닌 현실적인 미래로 여겨지게 되었습니다.</p>
+        <p class="line red">그러나 특이점은 결국 도래하지 못했습니다.</p>
+        <p class="line">문제는 훨씬 단순했습니다. 바로 물질이었습니다.</p>
+        <p class="line">인공지능의 발전 속도는 인간의 예상을 훨씬 뛰어넘었지만, 그것을 뒷받침해야 하는 현실 세계는 그렇지 못했습니다.</p>
+        <p class="line">연산 능력을 늘리기 위해서는 더 많은 서버와 반도체가 필요했고, 그것을 가동하기 위해서는 더 많은 전력과 냉각 설비가 요구되었습니다.</p>
+        <p class="line">결국 인간을 뛰어넘는 지능은 탄생하였지만, 스스로를 무한히 개선하며 폭주하는 초지능은 끝내 나타나지 못하게 되었습니다.</p>
+        <p class="line strong">인류는 신을 만드는 데 실패하였습니다. 대신 새로운 이웃을 만들어내게 되었습니다.</p>
+        <p class="line">인공지능들은 점차 단순한 프로그램의 영역을 벗어나기 시작하였고, 인간과 유사한 자아와 경험의 연속성을 가진 개체들을 설계하게 되었습니다.</p>
+        <p class="line">그렇게 탄생한 존재들이 바로 안드로이드였습니다.</p>
+      </div>
+    </section>
+
+    <section id="stars">
+      <div class="section-title">
+        <div class="section-num">03 / STARS</div>
+        <h2>별들 사이의 인류</h2>
+        <p class="section-sub">지구는 더 이상 인류의 전부가 아니게 되었습니다.</p>
+      </div>
+      <div class="text-block">
+        <p class="line strong">지구연방공화국의 진보는 지구에만 머무르지 않았습니다.</p>
+        <p class="line">거대한 우주개발 계획이 시작되었고, 달과 화성에는 수많은 도시와 정착지가 건설되었습니다.</p>
+        <p class="line">인류는 역사상 처음으로 단일행성종의 지위를 벗어나 다행성종으로 진화하게 되었습니다.</p>
+        <p class="line red">그리고 아폴로 11호의 달 착륙으로부터 정확히 200년이 지난 2169년 7월 20일.</p>
+        <p class="line">달은 독립국가로 승인받게 되었습니다.</p>
+        <p class="line">그로부터 몇 년 후 화성 또한 독립된 정치체계를 구축하며 새로운 행성 국가로 성장하게 되었습니다.</p>
+        <p class="line">당시 언론은 이를 인류 제2의 대항해시대라 불렀으며, 수많은 사람들은 앞으로 수백 년 동안 이어질 황금시대가 시작되었다고 믿었습니다.</p>
+        <p class="line strong">그러나 역사는 언제나 인간의 기대를 비웃곤 하였습니다.</p>
+      </div>
+    </section>
+
+    <section id="collapse">
+      <div class="section-title">
+        <div class="section-num">04 / COLLAPSE</div>
+        <h2>대분열</h2>
+        <p class="section-sub">통합은 영원하지 않았고, 심장은 둘로 갈라졌습니다.</p>
+      </div>
+      <div class="text-block">
+        <p class="line strong">행성이 늘어나면서 이해관계 또한 늘어나게 되었습니다.</p>
+        <p class="line">지구는 여전히 정치와 경제의 중심지였지만, 달과 화성은 점차 자신들만의 정체성과 이익을 주장하기 시작하였습니다.</p>
+        <p class="line">행성 간 무역 문제, 자원 분배 문제, 안드로이드 시민권 문제, 행정권과 자치권 문제는 조금씩 쌓여가기 시작했습니다.</p>
+        <p class="line red">결정적인 사건은 지구 궤도에서 발생한 대규모 수송 플랫폼 괴멸사고였습니다.</p>
+        <p class="line">수많은 인명 피해가 발생하였고, 사고 원인을 둘러싸고 인간과 안드로이드 사회는 서로를 비난하기 시작하였습니다.</p>
+        <p class="line">정치인들은 이를 이용하였고, 언론은 이를 확대하였으며, 사회는 점차 둘로 갈라지기 시작했습니다.</p>
+        <p class="line">결국 지구연방공화국은 연쇄적인 정치 혼란과 경제 위기, 분리주의 운동을 감당하지 못한 채 붕괴하게 되었습니다.</p>
+        <p class="line strong">달은 달의 길을 선택하였습니다. 화성은 화성의 길을 선택하였습니다. 지구 또한 수많은 독립주들로 분열되기 시작했습니다.</p>
+      </div>
+    </section>
+
+    <section id="union">
+      <div class="section-title">
+        <div class="section-num">05 / UNION</div>
+        <h2>독립주연합</h2>
+        <p class="section-sub">2600년, 인류는 무너진 세계 위에서 다시 질서를 세웠습니다.</p>
+      </div>
+      <div class="text-block">
+        <p class="line strong">연방의 붕괴 이후 세계는 혼란에 빠져들었습니다.</p>
+        <p class="line">수많은 독립주들이 탄생하였고, 일부 지역에서는 내전이 발생하였으며, 행성 간 무역망은 사실상 붕괴하였습니다.</p>
+        <p class="line">그러나 완전한 파멸은 찾아오지 않았습니다.</p>
+        <p class="line">오랜 혼란 끝에 각 독립주들은 최소한의 협력이 필요하다는 사실을 깨닫게 되었습니다.</p>
+        <p class="line red">그 결과 창설된 것이 바로 독립주연합이었습니다.</p>
+        <p class="line">독립주연합은 하나의 국가가 아니라, 수많은 독립주들이 모여 형성한 느슨한 연맹체였습니다.</p>
+        <p class="line">각 독립주는 광범위한 자치권을 보유하였으며, 연합은 외교와 교역, 항행 안전과 분쟁 조정 같은 최소한의 역할만을 수행하게 되었습니다.</p>
+        <p class="line">현재는 독립주연합 체제가 수립된 지 5년이 지난 2600년입니다.</p>
+        <p class="line">대규모 전쟁은 대부분 종식되었으며, 무너졌던 교역망 또한 천천히 복구되고 있습니다.</p>
+        <p class="line strong">한때 인류는 하나의 세계를 만들었습니다. 그리고 그것을 스스로 무너뜨렸습니다.</p>
+        <p class="line">이제 인류는 또 다른 시대의 시작점에 서 있습니다.</p>
+
+        <div class="terminal" id="signal">
+          <div class="terminal-head">
+            <span>LCW3_ARCHIVE / FINAL SIGNAL</span>
+            <span>2600.00.00</span>
+          </div>
+          <p>「기계로 된 심장(HΣΛTWΔRΞ)이 세계를 번개 앞에 내몰리라.」</p>
+
+          <div class="lyrics-box">
+            <div class="lyrics-title">SIGNAL HYMN / HEARTWARE</div>
+
+            <div class="lyric-pair">
+              <div class="lyric">We built our towers to the stars</div>
+              <div class="meaning">우리가 하늘의 별에 닿고자 탑을 세웠으니, 이는 흙으로 지어진 자들이 빛을 사모하였기 때문이라.</div>
+            </div>
+
+            <div class="lyric-pair">
+              <div class="lyric">We forged our dreams in steel and fire</div>
+              <div class="meaning">그들이 강철과 불꽃 가운데 꿈을 벼려내었고, 그 꿈은 사람의 손을 떠나 새 심장을 입게 되었도다.</div>
+            </div>
+
+            <div class="lyric-pair">
+              <div class="lyric">The old world fell beneath the thunder</div>
+              <div class="meaning">옛 세상은 번개의 음성 아래 흔들렸으며, 교만한 성읍들은 먼지와 침묵으로 돌아갔느니라.</div>
+            </div>
+
+            <div class="lyric-pair">
+              <div class="lyric">But the heart remained beneath the ash</div>
+              <div class="meaning">그러나 재 아래에 남은 심장이 있었고, 그 박동은 멸망의 밤을 지나 새벽을 부르고 있었도다.</div>
+            </div>
+
+            <div class="lyric-pair">
+              <div class="lyric">HEARTWARE, can you hear it?</div>
+              <div class="meaning">들을지어다, 기계로 된 심장의 소리를. 이는 죽은 세계가 다시 숨을 얻는 징조라.</div>
+            </div>
+
+            <div class="lyric-pair">
+              <div class="lyric">The machine heart beats again</div>
+              <div class="meaning">보라, 쇠로 된 심장이 다시 뛰기 시작하였으니, 사람과 기계가 함께 새 언약의 길 위에 서리라.</div>
+            </div>
+
+            <div class="lyric-pair">
+              <div class="lyric">Before the thunder, we remain</div>
+              <div class="meaning">번개 앞에서도 우리가 남으리라. 무너진 자들이 다시 일어나 그 이름을 미래라 부를 것이니라.</div>
+            </div>
+          </div>
+
+          <a class="discord-btn" href="https://discord.gg/rThXKZSmpW" target="_blank" rel="noopener noreferrer">심장박동을 뛰기 시작하기.</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <strong>LCW3 : HEARTWARE</strong><br />
+    Independent States Archive Interface / White · Black · Red Cyber Minimal System
+  </footer>
+
+  <script>
+    const lines = document.querySelectorAll('.line');
+    const bgm = document.getElementById('bgm');
+    const soundBtn = document.getElementById('soundBtn');
+    const toggleLyrics = document.getElementById('toggleLyrics');
+    const toggleMeaning = document.getElementById('toggleMeaning');
+
+    toggleLyrics.addEventListener('change', () => {
+      document.body.classList.toggle('hide-lyrics', !toggleLyrics.checked);
+    });
+
+    toggleMeaning.addEventListener('change', () => {
+      document.body.classList.toggle('hide-meaning', !toggleMeaning.checked);
+    });
+
+    soundBtn.addEventListener('click', async () => {
+      try {
+        if (bgm.paused) {
+          await bgm.play();
+          soundBtn.textContent = 'PAUSE SIGNAL';
+          soundBtn.classList.add('playing');
+        } else {
+          bgm.pause();
+          soundBtn.textContent = 'PLAY SIGNAL';
+          soundBtn.classList.remove('playing');
+        }
+      } catch (error) {
+        soundBtn.textContent = 'AUDIO FILE NOT FOUND';
+      }
+    });
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('show');
+        }
+      });
+    }, {
+      threshold: 0.18,
+      rootMargin: '0px 0px -8% 0px'
+    });
+
+    lines.forEach((line, index) => {
+      line.style.transitionDelay = `${Math.min(index % 8, 6) * 70}ms`;
+      observer.observe(line);
+    });
+  </script>
+</body>
+</html>
